@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StudyDex - Max Motion</title>
-    <!-- Google Fonts -->
+    <title>StudyDex - Premium Learning</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #030305;
-            --accent-blue: #3b82f6;
-            --accent-purple: #8b5cf6;
-            --accent-cyan: #06b6d4;
-            --text-main: #ffffff;
-            --text-dim: #9ca3af;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --transition-speed: 0.6s;
+            --bg-base: #0a0a0c;
+            --bg-surface: #141418;
+            --bg-surface-elevated: #1e1e24;
+            --text-primary: #ffffff;
+            --text-secondary: #8b8b99;
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --accent: #6366f1;
+            
+            --color-physics: #3b82f6;
+            --color-chem: #10b981;
+            --color-math: #f59e0b;
+            --color-bio: #ec4899;
+
+            --easing-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         * {
@@ -31,453 +36,280 @@
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            background-image: radial-gradient(circle at 50% 0%, #1a1a24 0%, var(--bg-base) 60%);
+            color: var(--text-primary);
             height: 100vh;
             overflow: hidden;
             display: flex;
             justify-content: center;
-            perspective: 1200px;
         }
 
-        /* --------------------------------------
-           1. AMBIENT BACKGROUND ANIMATIONS
-        --------------------------------------- */
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: var(--bg-dark);
-            overflow: hidden;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.2;
-            animation: orbDrift 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes orbDrift {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            50% { transform: translate(15vw, 15vh) scale(1.4) rotate(180deg); filter: blur(120px); }
-            100% { transform: translate(-10vw, 20vh) scale(0.9) rotate(360deg); }
-        }
-
-        /* --------------------------------------
-           2. APP SHELL & PAGE TRANSITIONS
-        --------------------------------------- */
-        .page-container {
+        .app-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
-            transform-style: preserve-3d;
         }
 
-        .screens-wrapper {
+        .screen-container {
             flex: 1;
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
-            scroll-behavior: smooth;
+            scrollbar-width: none; 
         }
+        .screen-container::-webkit-scrollbar { display: none; }
 
         .screen {
-            display: none;
-            padding: 24px 20px 120px;
-            width: 100%;
-            min-height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            /* Cinematic Out-State */
+            width: 100%;
+            min-height: 100%;
+            padding: 20px 20px 100px;
             opacity: 0;
-            filter: blur(15px);
-            transform: translateZ(-200px) translateY(40px);
-            transition: all var(--transition-speed) cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
+            visibility: hidden;
+            transform: translateY(15px);
+            transition: opacity 0.3s var(--easing-smooth), transform 0.4s var(--easing-smooth), visibility 0.4s;
+            will-change: transform, opacity;
         }
 
         .screen.active {
-            display: block;
-            /* Cinematic In-State */
             opacity: 1;
-            filter: blur(0px);
-            transform: translateZ(0) translateY(0);
+            visibility: visible;
+            transform: translateY(0);
             position: relative;
-            pointer-events: auto;
+            z-index: 10;
         }
 
-        /* --------------------------------------
-           3. NAVBAR ANIMATIONS
-        --------------------------------------- */
         .navbar {
-            height: 80px;
+            height: 70px;
             padding: 0 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(3, 3, 5, 0.8);
-            backdrop-filter: blur(30px);
-            z-index: 1000;
-            border-bottom: 1px solid var(--glass-border);
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 100;
             transform: translateY(-100%);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.4s var(--easing-smooth);
+            position: sticky;
+            top: 0;
         }
 
-        .navbar.visible {
-            transform: translateY(0);
-        }
+        .navbar.visible { transform: translateY(0); }
 
-        .back-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
-            transition: 0.3s;
+            color: var(--text-primary);
         }
 
-        .back-btn:active { transform: scale(0.85); }
-
-        /* --------------------------------------
-           4. HOME SCREEN STAGGERED ENTRANCE
-        --------------------------------------- */
-        .brand-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 50px 0 30px;
+        .nav-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
         }
 
-        /* Continuous Logo Pulse & Float */
-        .logo-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin-bottom: 24px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-
-        .logo-glass {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 35px;
-            backdrop-filter: blur(15px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.5rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            z-index: 2;
-        }
-
-        .logo-glow {
-            position: absolute;
-            inset: -15px;
-            background: conic-gradient(from 0deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan), var(--accent-blue));
-            border-radius: 45px;
-            filter: blur(20px);
-            opacity: 0.6;
-            animation: spinGlow 4s linear infinite;
-        }
-
-        @keyframes spinGlow {
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Staggered Elements */
-        .screen.active .stagger-1 { animation: popUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s; opacity: 0; }
-        .screen.active .stagger-2 { animation: popUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s; opacity: 0; }
-        .screen.active .stagger-3 { animation: popUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s; opacity: 0; }
-        .screen.active .stagger-4 { animation: popUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.4s; opacity: 0; }
-
-        @keyframes popUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); filter: blur(5px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0px); }
-        }
-
-        /* --------------------------------------
-           5. INTERACTIVE CARDS & RIPPLE
-        --------------------------------------- */
-        .tap-target {
+        /* Smooth Press Animation replacing Ripple */
+        .press-target {
             cursor: pointer;
-            position: relative;
-            overflow: hidden; /* Essential for ripple */
-            transform-origin: center;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s;
+            transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1), background 0.2s;
+            will-change: transform;
         }
 
-        /* The physical press down */
-        .tap-target:active {
-            transform: scale(0.94) !important;
+        .press-target:active {
+            transform: scale(0.96);
+            background: var(--bg-surface-elevated);
         }
 
-        /* Animated Shimmer Line for Premium Button */
-        .shimmer-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            padding: 24px;
-            margin-bottom: 16px;
+        .hero-section {
+            padding: 40px 0 30px;
+            text-align: center;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--bg-surface-elevated), var(--bg-surface));
+            border: 1px solid var(--border-hover);
+            border-radius: 24px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            position: relative;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .shimmer-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: skewX(-20deg);
-            animation: shimmerSlide 3s infinite;
-            pointer-events: none;
-        }
+        .hero-title { font-family: 'Outfit', sans-serif; font-size: 2.5rem; font-weight: 700; margin-bottom: 5px; }
+        .hero-subtitle { color: var(--text-secondary); font-size: 0.95rem; }
 
-        @keyframes shimmerSlide {
-            100% { left: 200%; }
-        }
-
-        /* Chapter Boxes */
-        .chapter-box {
-            background: var(--glass);
-            border: 2px solid var(--glass-border);
-            border-radius: 24px;
+        .bento-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 18px;
-            /* Waterfall initial state */
-            opacity: 0;
-            transform: translateY(40px);
-        }
-
-        /* Active Glow State */
-        .chapter-box:active {
-            border-color: var(--theme-color);
-            box-shadow: 0 0 20px -5px var(--theme-color);
-        }
-
-        .chapter-id {
-            width: 54px;
-            height: 54px;
-            background: var(--theme-color);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.4rem;
-            color: #fff;
-            box-shadow: 0 10px 20px -5px var(--theme-color);
-            transition: 0.4s;
-        }
-
-        .chapter-box:hover .chapter-id {
-            transform: rotate(-10deg) scale(1.1);
-        }
-
-        .chapter-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fff;
-            flex: 1;
-            line-height: 1.3;
-        }
-
-        /* Dynamic Ripple Class injected via JS */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            transform: scale(0);
-            animation: rippleEffect 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            background-color: rgba(255, 255, 255, 0.25);
-            pointer-events: none;
-        }
-
-        @keyframes rippleEffect {
-            to { transform: scale(4); opacity: 0; }
-        }
-
-        /* --------------------------------------
-           6. LEARN MORE ANIMATIONS
-        --------------------------------------- */
-        .feature-chip {
-            display: flex;
-            align-items: flex-start;
             gap: 16px;
-            margin-bottom: 24px;
-            padding: 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 20px;
-            border: 1px solid transparent;
-            transition: 0.3s;
         }
 
-        .feature-chip:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateX(10px);
+        .bento-card-primary {
+            background: linear-gradient(145deg, #1e1e28, var(--bg-surface));
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
-        .chip-icon {
+        .icon-box {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-blue);
             font-size: 1.2rem;
             flex-shrink: 0;
-            animation: floatIcon 3s infinite ease-in-out;
         }
 
-        @keyframes floatIcon {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .card-content h3 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 600; margin-bottom: 3px; }
+        .card-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .list-header { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 16px; padding-top: 10px; }
+
+        .chapter-row {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        /* --------------------------------------
-           7. LOADER
-        --------------------------------------- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-dark);
-            z-index: 9999;
+        .chapter-num {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-surface-elevated);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s;
+            font-weight: 600;
+            color: var(--text-secondary);
         }
-        .loader-ring {
-            width: 60px; height: 60px;
-            border: 3px solid rgba(255,255,255,0.05);
-            border-top-color: var(--accent-blue);
-            border-right-color: var(--accent-purple);
-            border-radius: 50%;
-            animation: spinRing 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-        }
-        @keyframes spinRing { to { transform: rotate(360deg); } }
 
+        .chapter-info { flex: 1; }
+        .chapter-info h4 { font-size: 1rem; font-weight: 500; line-height: 1.3; }
+
+        .stagger-enter {
+            opacity: 0;
+            animation: slideUpFade 0.5s var(--easing-smooth) forwards;
+            animation-delay: calc(var(--idx) * 0.05s);
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Questions Grid */
+        .q-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .q-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="loader-ring"></div></div>
-
-    <!-- Animated Ambient Background -->
-    <div class="ambient-bg">
-        <div class="orb" style="width: 400px; height: 400px; background: var(--accent-blue); top: -10%; left: -10%;"></div>
-        <div class="orb" style="width: 500px; height: 500px; background: var(--accent-purple); bottom: -10%; right: -10%; animation-delay: -5s; animation-direction: reverse;"></div>
-        <div class="orb" style="width: 300px; height: 300px; background: var(--accent-cyan); top: 40%; left: 40%; animation-delay: -10s; opacity: 0.1;"></div>
-    </div>
-
-    <div class="page-container">
-        <!-- Sliding Navbar -->
+    <div class="app-container">
         <nav class="navbar" id="navbar">
-            <div class="back-btn tap-target" onclick="app.back()"><i class="fas fa-arrow-left"></i></div>
-            <div id="nav-title" style="font-family: 'Comfortaa'; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px;">STUDYDEX</div>
-            <div style="width: 44px"></div>
+            <div class="nav-btn press-target" onclick="app.back()"><i class="fas fa-arrow-left"></i></div>
+            <div class="nav-title" id="nav-title">STUDYDEX</div>
+            <div style="width: 40px"></div>
         </nav>
 
-        <div class="screens-wrapper">
+        <div class="screen-container">
             <!-- HOME SCREEN -->
             <section id="home" class="screen active">
-                <div class="brand-section stagger-1">
-                    <div class="logo-container">
-                        <div class="logo-glow"></div>
-                        <div class="logo-glass">
-                            <i class="fas fa-book-sparkles" style="background: linear-gradient(135deg, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-                        </div>
-                    </div>
-                    <h1 style="font-family: 'Comfortaa'; font-size: 3rem; background: linear-gradient(to bottom, #fff, #9ca3af); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -1px;">StudyDex</h1>
-                    <p style="color: var(--accent-blue); margin-top: 5px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">Maximum Motion Edition</p>
+                <div class="hero-section stagger-enter" style="--idx: 0;">
+                    <div class="hero-icon"><i class="fas fa-layer-group"></i></div>
+                    <h1 class="hero-title">StudyDex</h1>
+                    <p class="hero-subtitle">Class 12 • Unified Modules</p>
                 </div>
 
-                <div class="shimmer-card tap-target stagger-2" onclick="app.navigate('subjects')" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(3,3,5,0)); border-color: rgba(59, 130, 246, 0.4);">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 2rem; color: #fff; text-shadow: 0 0 20px rgba(59,130,246,0.8);"><i class="fas fa-play-circle"></i></div>
-                        <div>
-                            <h3 style="font-size: 1.4rem; font-weight: 700;">Start Learning</h3>
-                            <p style="color: var(--text-dim); font-size: 0.95rem; margin-top: 2px;">Dive into Adaptive Modules</p>
-                        </div>
+                <div class="bento-card bento-card-primary press-target stagger-enter" style="--idx: 1;" onclick="app.navigate('subjects')">
+                    <div class="icon-box" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;"><i class="fas fa-compass"></i></div>
+                    <div class="card-content" style="flex: 1;">
+                        <h3>Explore</h3>
+                        <p>Browse the master curriculum</p>
                     </div>
-                    <i class="fas fa-arrow-right" style="color: var(--accent-blue);"></i>
+                    <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.9rem;"></i>
                 </div>
 
-                <div class="shimmer-card tap-target stagger-3" onclick="app.navigate('about')" style="animation-delay: 0.3s;">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 1.6rem; color: var(--text-dim);"><i class="fas fa-compass"></i></div>
-                        <div>
-                            <h3 style="font-size: 1.2rem; color: #fff; font-weight: 600;">Explore Platform</h3>
-                            <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 2px;">Methodology & Tech Stack</p>
-                        </div>
+                <div class="bento-card press-target stagger-enter" style="--idx: 2;" onclick="app.navigate('about')">
+                    <div class="icon-box" style="background: var(--bg-surface-elevated); color: var(--text-primary);"><i class="fas fa-info-circle"></i></div>
+                    <div class="card-content" style="flex: 1;">
+                        <h3>Learn More</h3>
+                        <p>Pedagogy and platform features</p>
                     </div>
+                    <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.9rem;"></i>
                 </div>
             </section>
 
             <!-- SUBJECTS SCREEN -->
             <section id="subjects" class="screen">
-                <div id="subject-list" style="padding-top: 10px;"></div>
+                <h2 class="list-header stagger-enter" style="--idx: 0;">Select Subject</h2>
+                <div id="subject-list"></div>
             </section>
 
             <!-- CHAPTERS SCREEN -->
             <section id="chapters" class="screen">
-                <div id="chapter-list" style="padding-top: 10px;"></div>
+                <h2 class="list-header stagger-enter" id="chapter-header" style="--idx: 0;">Modules</h2>
+                <div id="chapter-list"></div>
+            </section>
+
+            <!-- QUESTION TYPES SCREEN -->
+            <section id="questions" class="screen">
+                <h2 class="list-header stagger-enter" id="question-header" style="--idx: 0;">Question Bank</h2>
+                <div class="q-grid" id="question-list"></div>
             </section>
 
             <!-- ABOUT SCREEN -->
             <section id="about" class="screen">
-                <div style="padding-top: 10px;">
-                    <h2 class="stagger-1" style="font-family: 'Comfortaa'; font-size: 2rem; color: #fff; margin-bottom: 25px;">The Engine.</h2>
-                    
-                    <div class="feature-chip stagger-2">
-                        <div class="chip-icon"><i class="fas fa-bolt"></i></div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">Fluid Motion UI</h4>
-                            <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.5;">Every pixel is GPU-accelerated. Utilizing custom CSS spring physics, staggered loading delays, and 3D transforms to create an immersive feel.</p>
-                        </div>
-                    </div>
+                <h2 class="list-header stagger-enter" style="--idx: 0;">Learn More</h2>
+                
+                <div class="bento-card stagger-enter" style="--idx: 1; flex-direction: column; align-items: flex-start;">
+                    <h3 style="margin-bottom: 8px;">Adaptive Learning</h3>
+                    <p style="line-height: 1.5;">StudyDex organizes the Class 12 syllabus into focused modules. Our structure moves from basic conceptual MCQs to complex Case-based questions, ensuring a gradual increase in difficulty for better retention.</p>
+                </div>
 
-                    <div class="feature-chip stagger-3">
-                        <div class="chip-icon" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2)); color: #10b981;"><i class="fas fa-fingerprint"></i></div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">Android Touch Engine</h4>
-                            <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.5;">Custom JavaScript interceptors calculate exact X/Y touch coordinates to generate authentic expanding shockwaves (ripples) on every tap.</p>
-                        </div>
-                    </div>
-
-                    <div class="feature-chip stagger-4">
-                        <div class="chip-icon" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(236, 72, 153, 0.2)); color: #f59e0b;"><i class="fas fa-layer-group"></i></div>
-                        <div>
-                            <h4 style="font-size: 1.1rem; color: #fff; margin-bottom: 6px;">Depth & Perception</h4>
-                            <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.5;">Multi-layered backdrop filtering, cinematic blur cross-fades, and shifting conic gradients keep the eyes engaged without fatigue.</p>
-                        </div>
-                    </div>
+                <div class="bento-card stagger-enter" style="--idx: 2; flex-direction: column; align-items: flex-start;">
+                    <h3 style="margin-bottom: 8px;">Exam Oriented</h3>
+                    <p style="line-height: 1.5;">Every chapter is categorized into five distinct question types, modeled after current board examination patterns. This allows you to practice targeted answering techniques for each format.</p>
                 </div>
             </section>
         </div>
@@ -485,12 +317,124 @@
 
     <script>
         const DATA = {
-            physics: { name: "Physics", icon: "atom", color: "#3b82f6", chapters: ["Electric Charges", "Electrostatic Potential", "Current Electricity", "Moving Charges", "Magnetism", "EMI", "Alternating Current", "EM Waves"] },
-            chemistry: { name: "Chemistry", icon: "flask", color: "#10b981", chapters: ["Solutions", "Electrochemistry", "Chemical Kinetics", "d & f Block", "Coordination", "Haloalkanes", "Alcohols", "Aldehydes"] },
-            maths: { name: "Mathematics", icon: "infinity", color: "#f59e0b", chapters: ["Relations & Functions", "Inverse Trig", "Matrices", "Determinants", "Continuity", "Derivatives", "Integrals", "Vectors"] },
-            biology: { name: "Biology", icon: "dna", color: "#ec4899", chapters: ["Sexual Reproduction", "Human Reproduction", "Reproductive Health", "Inheritance", "Molecular Basis", "Evolution", "Human Health"] }
+            physics: { 
+                name: "Physics", icon: "atom", color: "var(--color-physics)", bg: "rgba(59, 130, 246, 0.1)", 
+                chapters: ["Electric Charges & Fields", "Electrostatic Potential", "Current Electricity", "Moving Charges & Magnetism", "Magnetism & Matter", "Electromagnetic Induction", "Alternating Current", "Electromagnetic Waves", "Ray Optics", "Wave Optics", "Dual Nature of Radiation", "Atoms", "Nuclei", "Semiconductor Electronics"] 
+            },
+            chemistry: { 
+                name: "Chemistry", icon: "flask", color: "var(--color-chem)", bg: "rgba(16, 185, 129, 0.1)", 
+                chapters: ["Solutions", "Electrochemistry", "Chemical Kinetics", "d & f Block Elements", "Coordination Compounds", "Haloalkanes & Haloarenes", "Alcohols, Phenols & Ethers", "Aldehydes, Ketones & Acids", "Amines", "Biomolecules"] 
+            },
+            maths: { 
+                name: "Mathematics", icon: "square-root-variable", color: "var(--color-math)", bg: "rgba(245, 158, 11, 0.1)", 
+                chapters: ["Relations & Functions", "Inverse Trigonometry", "Matrices", "Determinants", "Continuity & Differentiability", "Applications of Derivatives", "Integrals", "Applications of Integrals", "Differential Equations", "Vector Algebra", "3D Geometry", "Linear Programming", "Probability"] 
+            },
+            biology: { 
+                name: "Biology", icon: "dna", color: "var(--color-bio)", bg: "rgba(236, 72, 153, 0.1)", 
+                chapters: ["Sexual Reproduction in Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance", "Molecular Basis of Inheritance", "Evolution", "Human Health & Diseases", "Microbes in Human Welfare", "Biotechnology: Principles", "Biotechnology & Applications", "Organisms & Populations", "Ecosystem", "Biodiversity"] 
+            }
         };
+
+        const QUESTION_TYPES = [
+            { id: 'mcq', name: "Multiple Choice", icon: "list-check", desc: "Conceptual single-correct" },
+            { id: 'vsa', name: "Very Short Answer", icon: "align-left", desc: "1 Mark definitions/facts" },
+            { id: 'sa', name: "Short Answer", icon: "paragraph", desc: "2-3 Mark explanations" },
+            { id: 'la', name: "Long Answer", icon: "file-lines", desc: "5 Mark detailed derivations" },
+            { id: 'case', name: "Case Based", icon: "magnifying-glass-chart", desc: "Context-based analysis" }
+        ];
 
         const app = {
             history: ['home'],
+            state: { subject: null, chapter: null },
             
+            init() {
+                this.renderSubjects();
+            },
+
+            renderSubjects() {
+                const list = document.getElementById('subject-list');
+                list.innerHTML = Object.entries(DATA).map(([id, sub], index) => `
+                    <div class="bento-card press-target stagger-enter" style="--idx: ${index + 1};" onclick="app.selectSubject('${id}')">
+                        <div class="icon-box" style="background: ${sub.bg}; color: ${sub.color};">
+                            <i class="fas fa-${sub.icon}"></i>
+                        </div>
+                        <div class="card-content" style="flex: 1;">
+                            <h3>${sub.name}</h3>
+                            <p>${sub.chapters.length} Chapters</p>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.9rem;"></i>
+                    </div>
+                `).join('');
+            },
+
+            selectSubject(id) {
+                this.state.subject = id;
+                const sub = DATA[id];
+                const list = document.getElementById('chapter-list');
+                document.getElementById('nav-title').textContent = sub.name.toUpperCase();
+                document.getElementById('chapter-header').textContent = sub.name;
+                
+                list.innerHTML = sub.chapters.map((ch, index) => `
+                    <div class="chapter-row press-target stagger-enter" style="--idx: ${index + 1};" onclick="app.selectChapter('${ch}')">
+                        <div class="chapter-num" style="color: ${sub.color}; background: ${sub.bg};">${index + 1}</div>
+                        <div class="chapter-info"><h4>${ch}</h4></div>
+                        <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.8rem;"></i>
+                    </div>
+                `).join('');
+                this.navigate('chapters');
+            },
+
+            selectChapter(name) {
+                this.state.chapter = name;
+                const list = document.getElementById('question-list');
+                document.getElementById('question-header').textContent = name;
+                
+                list.innerHTML = QUESTION_TYPES.map((type, index) => `
+                    <div class="q-card press-target stagger-enter" style="--idx: ${index + 1};">
+                        <div class="icon-box" style="background: var(--bg-surface-elevated);"><i class="fas fa-${type.icon}"></i></div>
+                        <div class="card-content" style="flex: 1;">
+                            <h3 style="font-size: 1rem;">${type.name}</h3>
+                            <p>${type.desc}</p>
+                        </div>
+                        <i class="fas fa-play" style="font-size: 0.7rem; color: var(--accent);"></i>
+                    </div>
+                `).join('');
+                this.navigate('questions');
+            },
+
+            navigate(id) {
+                const current = document.querySelector('.screen.active');
+                if (current) current.classList.remove('active');
+                
+                document.querySelector('.screen-container').scrollTop = 0;
+                document.getElementById(id).classList.add('active');
+
+                const nav = document.getElementById('navbar');
+                if (id === 'home') nav.classList.remove('visible');
+                else nav.classList.add('visible');
+                
+                if (this.history[this.history.length - 1] !== id) this.history.push(id);
+                
+                if (id === 'about') document.getElementById('nav-title').textContent = "INFO";
+                if (id === 'subjects') document.getElementById('nav-title').textContent = "SYLLABUS";
+            },
+
+            back() {
+                if (this.history.length > 1) {
+                    this.history.pop();
+                    const prev = this.history[this.history.length - 1];
+                    this.navigate(prev);
+                    
+                    // Restore nav titles based on screen
+                    if(prev === 'subjects') document.getElementById('nav-title').textContent = "SYLLABUS";
+                    if(prev === 'chapters') document.getElementById('nav-title').textContent = DATA[this.state.subject].name.toUpperCase();
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
+
+    
