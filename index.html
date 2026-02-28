@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>StudyDex - Luminous Glass</title>
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
@@ -11,7 +12,6 @@
     <style>
         :root {
             --bg-base: #08080a;
-            /* Lighter, gradient glass */
             --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
             --glass-border: rgba(255, 255, 255, 0.12);
             --text-primary: #ffffff;
@@ -21,18 +21,13 @@
             --color-chem: #34d399;
             --color-math: #fbbf24;
             --color-bio: #f472b6;
+            --color-cs: #c084fc; /* Computer Science Color */
 
             --easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --easing-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -95,6 +90,8 @@
             font-size: 0.9rem;
             letter-spacing: 2px;
             text-transform: uppercase;
+            text-align: center;
+            flex: 1;
         }
 
         /* --------------------------------------
@@ -105,6 +102,7 @@
             position: relative;
             overflow-y: auto;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         .screen-container::-webkit-scrollbar { display: none; }
 
@@ -143,6 +141,7 @@
             gap: 18px;
             transition: transform 0.3s var(--easing-spring), border-color 0.3s, background 0.3s;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .glass-box::before {
@@ -181,7 +180,10 @@
         .content-stack p {
             font-size: 0.8rem;
             color: var(--text-secondary);
+            margin-top: 2px;
         }
+        
+        .content-stack h3 { user-select: text; }
 
         /* --------------------------------------
            4. STAGGER ANIMATION
@@ -217,7 +219,6 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 2rem; margin: 0 auto 20px;
         }
-
     </style>
 </head>
 <body>
@@ -230,7 +231,7 @@
         </nav>
 
         <div class="screen-container">
-            <!-- HOME SCREEN -->
+            <!-- HOME SCREEN (Only 3 Buttons) -->
             <section id="home" class="screen active">
                 <div class="hero-box stagger-enter" style="--idx: 0;">
                     <div class="hero-logo"><i class="fas fa-layer-group"></i></div>
@@ -238,32 +239,46 @@
                     <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">Premium Class 12 Learning</p>
                 </div>
 
-                <div class="glass-box stagger-enter" style="--idx: 1;" onclick="app.navigate('subjects')">
-                    <div class="icon-sq" style="color: #6366f1; border-color: rgba(99, 102, 241, 0.3);">
-                        <i class="fas fa-compass"></i>
+                <!-- Button 1: EXPLORE -->
+                <div class="glass-box stagger-enter" style="--idx: 1;" onclick="app.startPath('explore')">
+                    <div class="icon-sq" style="color: var(--color-physics); border-color: rgba(96, 143, 255, 0.3);">
+                        <i class="fas fa-book-open"></i>
                     </div>
                     <div class="content-stack" style="flex: 1;">
-                        <h3>Explore</h3>
+                        <h3>Start Learning</h3>
                         <p>Browse the master curriculum</p>
                     </div>
                     <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.8rem;"></i>
                 </div>
 
-                <div class="glass-box stagger-enter" style="--idx: 2;" onclick="app.navigate('about')">
-                    <div class="icon-sq" style="color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">
-                        <i class="fas fa-star"></i>
+                <!-- Button 2: SAMPLE PAPERS (New Feature) -->
+                <div class="glass-box stagger-enter" style="--idx: 2; border-color: rgba(192, 132, 252, 0.2);" onclick="app.startPath('sample')">
+                    <div class="icon-sq" style="color: var(--color-cs); border-color: rgba(192, 132, 252, 0.3);">
+                        <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="content-stack" style="flex: 1;">
-                        <h3>Learn More</h3>
+                        <h3>Sample Papers</h3>
+                        <p>Test your knowledge</p>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.8rem;"></i>
+                </div>
+
+                <!-- Button 3: LEARN MORE -->
+                <div class="glass-box stagger-enter" style="--idx: 3;" onclick="app.navigate('about')">
+                    <div class="icon-sq" style="color: #f59e0b; border-color: rgba(245, 158, 11, 0.3);">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="content-stack" style="flex: 1;">
+                        <h3>About Project</h3>
                         <p>Our methodology & tech</p>
                     </div>
                     <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.8rem;"></i>
                 </div>
             </section>
 
-            <!-- SUBJECTS SCREEN -->
+            <!-- SUBJECTS SCREEN (Shared by both paths) -->
             <section id="subjects" class="screen">
-                <h2 class="header-label stagger-enter" style="--idx: 0;">Syllabus</h2>
+                <h2 class="header-label stagger-enter" style="--idx: 0;" id="page-heading">SELECT SUBJECT</h2>
                 <div id="subject-list"></div>
             </section>
 
@@ -281,7 +296,7 @@
 
             <!-- ABOUT SCREEN -->
             <section id="about" class="screen">
-                <h2 class="header-label stagger-enter" style="--idx: 0;">Learn More</h2>
+                <h2 class="header-label stagger-enter" style="--idx: 0;">About Project</h2>
                 <div class="glass-box stagger-enter" style="--idx: 1; flex-direction: column; align-items: flex-start; gap: 10px;">
                     <h3 style="color: var(--color-chem);">Light Glass Design</h3>
                     <p style="line-height: 1.6;">Our UI uses "Luminous Glass" — a lightweight gradient texture that ensures the app remains fast and responsive while maintaining a high-end feel.</p>
@@ -311,27 +326,38 @@
             biology: { 
                 name: "Biology", icon: "dna", color: "var(--color-bio)",
                 chapters: ["Sexual Reproduction in Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance", "Molecular Basis of Inheritance", "Evolution", "Human Health & Diseases", "Microbes in Human Welfare", "Biotechnology: Principles", "Biotechnology & Applications", "Organisms & Populations", "Ecosystem", "Biodiversity"] 
+            },
+            informatics: { 
+                name: "Computer Sci.", icon: "code", color: "var(--color-cs)",
+                chapters: ["Introduction to Python", "Python Libraries - Pandas", "Data Handling using Pandas", "Data Visualization", "Introduction to SQL", "Database Queries using SQL", "Understanding Data", "Data Management", "Information Security"] 
             }
         };
 
         const QUESTIONS = [
-            { id: 'mcq', name: "Multiple Choice", icon: "list-ul", desc: "1 Mark Concept Check" },
-            { id: 'vsa', name: "Very Short Answer", icon: "pen-clip", desc: "1 Mark Precise Definitions" },
-            { id: 'sa', name: "Short Answer", icon: "align-left", desc: "2-3 Mark Explanations" },
-            { id: 'la', name: "Long Answer", icon: "file-lines", desc: "5 Mark Detailed Theory" },
-            { id: 'case', name: "Case Study", icon: "magnifying-glass", desc: "Contextual Analysis" }
+            { id: 'mcq', name: "Multiple Choice", icon: "list-ul", desc: "Objective Test" },
+            { id: 'vsa', name: "Very Short Answer", icon: "pen-clip", desc: "Precise Definitions" },
+            { id: 'sa', name: "Short Answer", icon: "align-left", desc: "Explanation" },
+            { id: 'la', name: "Long Answer", icon: "file-lines", desc: "Detailed Theory" },
+            { id: 'case', name: "Case Study", icon: "magnifying-glass", desc: "Context Analysis" }
         ];
 
         const app = {
             history: ['home'],
-            state: { sub: null, ch: null },
+            state: { sub: null, ch: null, source: 'explore' }, // Track if we are in explore mode or sample mode
 
             init() {
                 this.renderSubjects();
             },
 
+            startPath(type) {
+                this.state.source = type;
+                document.getElementById('page-heading').textContent = type === 'sample' ? "SAMPLE PAPER" : "SELECT SUBJECT";
+                this.navigate('subjects');
+            },
+
             renderSubjects() {
                 const list = document.getElementById('subject-list');
+                // Convert object entries to array and map them
                 list.innerHTML = Object.entries(DATA).map(([id, s], i) => `
                     <div class="glass-box stagger-enter" style="--idx: ${i+1}; border-color: ${s.color}33;" onclick="app.selectSubject('${id}')">
                         <div class="icon-sq" style="color: ${s.color}; border-color: ${s.color}44;">
@@ -350,8 +376,16 @@
                 this.state.sub = id;
                 const s = DATA[id];
                 const list = document.getElementById('chapter-list');
-                document.getElementById('nav-title').textContent = s.name;
-                document.getElementById('chapter-header').textContent = s.name;
+                let headerText = s.name;
+                
+                // Change header based on context
+                if(this.state.source === 'sample') {
+                    headerText += " Sample Paper";
+                    document.getElementById('chapter-header').textContent = `${s.name} Chapters`;
+                } else {
+                    document.getElementById('chapter-header').textContent = s.name;
+                }
+                document.getElementById('nav-title').textContent = s.name.toUpperCase();
 
                 list.innerHTML = s.chapters.map((ch, i) => `
                     <div class="glass-box stagger-enter" style="--idx: ${i+1};" onclick="app.selectChapter('${ch}')">
@@ -367,7 +401,15 @@
                 this.state.ch = name;
                 const list = document.getElementById('question-list');
                 const s = DATA[this.state.sub];
-                document.getElementById('question-header').textContent = "Practice: " + (name.length > 20 ? name.substring(0, 20) + '...' : name);
+                
+                let headerTitle = "";
+                if(this.state.source === 'sample') {
+                    headerTitle = `Paper: ${name}`;
+                } else {
+                    headerTitle = name;
+                }
+
+                document.getElementById('question-header').textContent = headerTitle.substring(0, 25) + (headerTitle.length > 25 ? "..." : "");
 
                 list.innerHTML = QUESTIONS.map((q, i) => `
                     <div class="glass-box stagger-enter" style="--idx: ${i+1};">
@@ -386,34 +428,4 @@
 
             navigate(id) {
                 const current = document.querySelector('.screen.active');
-                if (current) current.classList.remove('active');
-                
-                const next = document.getElementById(id);
-                document.querySelector('.screen-container').scrollTop = 0;
-                next.classList.add('active');
-
-                const nav = document.getElementById('navbar');
-                if (id === 'home') nav.classList.remove('visible');
-                else nav.classList.add('visible');
-
-                if (this.history[this.history.length-1] !== id) this.history.push(id);
-            },
-
-            back() {
-                if (this.history.length > 1) {
-                    this.history.pop();
-                    const prev = this.history[this.history.length-1];
-                    this.navigate(prev);
-                    
-                    if(prev === 'subjects') document.getElementById('nav-title').textContent = "SYLLABUS";
-                    if(prev === 'chapters') document.getElementById('nav-title').textContent = DATA[this.state.sub].name;
-                }
-            }
-        };
-
-        app.init();
-    </script>
-</body>
-</html>
-
-    
+                if (current) c
