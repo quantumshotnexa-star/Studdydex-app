@@ -41,7 +41,7 @@
 
         .app-container { width: 100%; max-width: 500px; height: 100vh; display: flex; flex-direction: column; position: relative; }
 
-        /* Navbar with Spacing Fix */
+        /* Navbar */
         .navbar {
             height: 64px;
             padding: 0 24px; 
@@ -82,7 +82,7 @@
         }
         .screen.active { opacity: 1; visibility: visible; transform: translateY(0); position: relative; z-index: 10; }
 
-        /* Buttons */
+        /* Common Buttons */
         .glass-box {
             background: var(--glass-bg);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
@@ -114,6 +114,44 @@
         .hero-logo { width: 72px; height: 72px; border: 1px solid var(--glass-border); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }
         
         .icon-sq { width: 52px; height: 52px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+
+        /* --- SPECIFIC PAGES STYLES --- */
+
+        /* YRS BOXES (Big Grid) */
+        .year-box-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .year-card {
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 1px solid var(--glass-border);
+        }
+        .year-card:last-child { grid-column: span 2; width: 100%; } 
+
+        /* SETS LIST (Simple List) */
+        .set-container { display: flex; flex-direction: column; gap: 14px; }
+        .set-row {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+        .set-row:active { transform: scale(0.98); }
+        .set-info h3 { font-size: 1.1rem; font-weight: 600; }
+        .set-info p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+        .set-icon { font-size: 1.4rem; color: var(--text-secondary); }
+
     </style>
 </head>
 <body>
@@ -153,7 +191,7 @@
                     </div>
                     <div class="content-stack" style="flex: 1;">
                         <h3>Sample Papers</h3>
-                        <p>Test your knowledge</p>
+                        <p>Past 5 Years PYQ</p>
                     </div>
                     <i class="fas fa-chevron-right" style="color: var(--text-secondary); font-size: 0.8rem;"></i>
                 </div>
@@ -177,16 +215,28 @@
                 <div id="subject-list"></div>
             </section>
 
-            <!-- CHAPTERS SCREEN (Only for Explore Path) -->
+            <!-- CHAPTERS SCREEN (Learning Path) -->
             <section id="chapters" class="screen">
                 <h2 class="header-label stagger-enter" id="chapter-header" style="--idx: 0;">Modules</h2>
                 <div id="chapter-list"></div>
             </section>
 
-            <!-- QUESTIONS SCREEN -->
+            <!-- QUESTION TYPES SCREEN (New Flow Link) -->
             <section id="questions" class="screen">
                 <h2 class="header-label stagger-enter" id="question-header" style="--idx: 0;">Practice</h2>
                 <div id="question-list"></div>
+            </section>
+
+            <!-- YEAR SELECTION SCREEN (Added) -->
+            <section id="years" class="screen">
+                <h2 class="header-label stagger-enter" style="--idx: 0;">Select Year</h2>
+                <div class="year-box-grid" id="year-list"></div>
+            </section>
+
+            <!-- SET SELECTION SCREEN -->
+            <section id="sets" class="screen">
+                <h2 class="header-label stagger-enter" style="--idx: 0;" id="sets-header">Physics: 2024</h2>
+                <div class="set-container" id="set-list"></div>
             </section>
 
             <!-- ABOUT SCREEN -->
@@ -242,7 +292,7 @@
             }
         };
 
-        // --- UPDATED QUESTION TYPES WITH CASE STUDIES ---
+        // Question Definitions
         const QUESTIONS = [
             { id: 'mcq', name: "Multiple Choice", icon: "list-ul", desc: "Objective Test" },
             { id: 'vsa', name: "Very Short Answer", icon: "pen-clip", desc: "Precise Definitions" },
@@ -285,32 +335,22 @@
                 this.state.sub = id;
                 const s = DATA[id];
                 
-                // FIX: Skip Chapters List for Sample Papers (Go Directly to Questions)
                 if (this.state.source === 'sample') {
-                    document.getElementById('nav-title').textContent = "SAMPLE PAPER";
+                    // SAMPLE PATH: Subject -> Years
+                    document.getElementById('nav-title').textContent = `${s.name}: Past Papers`;
                     
-                    // Prepare Question List Header (Subject Only)
-                    const qHeader = document.getElementById('question-header');
-                    qHeader.textContent = `${s.name} Sample Paper`;
-                    qHeader.style.opacity = 0; // Reset for fade
-                    void qHeader.offsetWidth; // Force Reflow
-                    qHeader.style.opacity = 1; 
-
-                    document.getElementById('question-list').innerHTML = QUESTIONS.map((q, i) => `
-                        <div class="glass-box stagger-enter" style="--idx: ${i+1};" onclick="alert('${q.name}: Coming Soon')">
-                            <div class="icon-sq" style="color: ${s.color};">
-                                <i class="fas fa-${q.icon}"></i>
-                            </div>
-                            <div class="content-stack" style="flex: 1;">
-                                <h3>${q.name}</h3>
-                                <p>${q.desc}</p>
-                            </div>
-                            <i class="fas fa-play" style="font-size: 0.7rem; color: ${s.color}; opacity: 0.8;"></i>
+                    const yearList = document.getElementById('year-list');
+                    const YEARS = [2024, 2023, 2022, 2021, 2020];
+                    
+                    yearList.innerHTML = YEARS.map((yr, idx) => `
+                        <div class="glass-box stagger-enter year-card" style="--idx: ${idx+1};" onclick="app.showSets('${s.name}', '${yr}')">
+                            <i class="fas fa-calendar-check" style="margin-bottom: 10px; font-size: 1.5rem; color: ${s.color}"></i>
+                            <span>${yr}</span>
                         </div>
                     `).join('');
-                    this.navigate('questions');
+                    this.navigate('years');
                 } else {
-                    // Standard Learning Flow (Keep Chapters Screen)
+                    // EXPLORE PATH: Subject -> Chapters
                     document.getElementById('chapter-header').textContent = s.name;
                     document.getElementById('nav-title').textContent = s.name.toUpperCase();
 
@@ -333,59 +373,10 @@
                 
                 document.getElementById('question-header').textContent = name.substring(0, 25) + "...";
                 
+                // FIX: Ensure onClick event triggers navigateToYears immediately
                 list.innerHTML = QUESTIONS.map((q, i) => `
-                    <div class="glass-box stagger-enter" style="--idx: ${i+1};" onclick="alert('${q.name}: Coming Soon')">
+                    <div class="glass-box stagger-enter" style="--idx: ${i+1}" onclick="app.navigateToYears(${s.color})">
                         <div class="icon-sq" style="color: ${s.color};">
                             <i class="fas fa-${q.icon}"></i>
                         </div>
-                        <div class="content-stack" style="flex: 1;">
-                            <h3>${q.name}</h3>
-                            <p>${q.desc}</p>
-                        </div>
-                        <i class="fas fa-play" style="font-size: 0.7rem; color: ${s.color}; opacity: 0.8;"></i>
-                    </div>
-                `).join('');
-                this.navigate('questions');
-            },
-
-            navigate(id) {
-                const current = document.querySelector('.screen.active');
-                if (current) current.classList.remove('active');
-                
-                const next = document.getElementById(id);
-                document.querySelector('.screen-container').scrollTop = 0;
-                next.classList.add('active');
-
-                const nav = document.getElementById('navbar');
-                if (id === 'home') nav.classList.remove('visible');
-                else nav.classList.add('visible');
-
-                if (this.history[this.history.length-1] !== id) this.history.push(id);
-            },
-
-            back() {
-                if (this.history.length > 1) {
-                    this.history.pop();
-                    const prev = this.history[this.history.length-1];
-                    this.navigate(prev);
-                    
-                    if(prev === 'subjects') {
-                        if(this.state.source === 'sample') {
-                            document.getElementById('nav-title').textContent = "SAMPLE PAPERS";
-                        } else {
-                            document.getElementById('nav-title').textContent = "START LEARNING";
-                        }
-                    }
-                    if(prev === 'chapters') {
-                         const subName = DATA[this.state.sub]?.name || "SYLLABUS";
-                         document.getElementById('nav-title').textContent = subName;
-                    }
-                }
-            }
-        };
-
-        window.onload = () => app.init();
-    </script>
-</body>
-</html>
-```
+                      
