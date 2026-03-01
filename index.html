@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StudyDex - Vibrant Glass</title>
+    <title>StudyDex - Scroll Fixed</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -15,327 +15,329 @@
             --color-math: #fbbf24;
             --color-bio: #f472b6;
             --color-cs: #c084fc;
-
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --color-eng: #f87171;
+            --glass-bg: rgba(15, 23, 42, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.4);
             --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --easing-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --text-secondary: rgba(255, 255, 255, 0.5);
+            --radius: 8px;
+            --spring: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; font-family: 'Inter', sans-serif;}
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; font-size: 13.5px; }
 
         body {
-            background-color: #0f172a;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.4), transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.4), transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.3), transparent 50%);
-            background-attachment: fixed;
+            background-color: #020617;
+            background-image: radial-gradient(circle at 50% 0%, rgba(30, 64, 175, 0.15) 0%, transparent 50%);
             color: var(--text-primary);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
+            height: 100dvh;
+            overflow: hidden; /* Prevents the whole website from scrolling */
+            display: flex; justify-content: center;
         }
 
-        .app-container { width: 100%; max-width: 500px; height: 100vh; display: flex; flex-direction: column; position: relative; }
+        .app-container { 
+            width: 100%; 
+            max-width: 500px; 
+            height: 100dvh; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+        }
 
-        /* Navbar */
         .navbar {
-            height: 64px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border); z-index: 100; transform: translateY(-100%);
-            transition: transform 0.5s var(--easing-smooth); gap: 12px;
+            height: 56px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
+            background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border); z-index: 100;
+            transition: transform 0.4s var(--spring);
+            position: absolute; top: 0; left: 0; right: 0;
+            transform: translateY(-100%);
         }
         .navbar.visible { transform: translateY(0); }
 
         .nav-btn {
-            width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;
-            color: var(--text-primary); cursor: pointer; transition: transform 0.2s;
+            width: 36px; height: 36px; border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center; color: white; cursor: pointer;
         }
-        .nav-btn:active { transform: scale(0.9); }
 
-        .nav-title { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; flex: 1; text-align: center;}
+        .nav-title { font-family: 'Outfit'; font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; flex: 1; text-align: center; }
 
-        /* Screens */
-        .screen-container { flex: 1; position: relative; overflow-y: auto; scrollbar-width: none; }
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; padding: 24px 20px 100px; opacity: 0; visibility: hidden;
-            transform: translateY(20px); transition: opacity 0.4s ease, transform 0.5s ease;
+        /* SCROLL FIX: Container is the viewport, screens scroll individually */
+        .screen-container { 
+            flex: 1; 
+            position: relative; 
+            margin-top: 0; /* Adjusted dynamically by JS when navbar visible */
+            transition: margin-top 0.4s var(--spring);
+            overflow: hidden; 
         }
-        .screen.active { opacity: 1; visibility: visible; transform: translateY(0); position: relative; z-index: 10; }
+        
+        .screen { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            padding: 20px 16px 40px; 
+            overflow-y: auto; /* Individual scroll for every page */
+            -webkit-overflow-scrolling: touch;
+            display: none; /* Logic fix: completely remove inactive pages */
+            scrollbar-width: none;
+        }
+        .screen::-webkit-scrollbar { display: none; }
 
-        /* Glass Cards */
+        .screen.active { 
+            display: block; 
+            animation: screenIn 0.4s var(--spring) forwards;
+        }
+
+        @keyframes screenIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .glass-box {
-            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border); border-radius: 16px; position: relative; margin-bottom: 14px; padding: 20px;
-            display: flex; align-items: center; gap: 18px; cursor: pointer; transition: transform 0.3s ease, background 0.3s;
+            background: var(--glass-bg); 
+            border: 1px solid var(--glass-border); 
+            border-radius: var(--radius); 
+            margin-bottom: 12px; padding: 16px;
+            display: flex; align-items: center; gap: 14px; cursor: pointer;
+            position: relative; transition: all 0.2s;
         }
-        .glass-box:active { transform: scale(0.97); background: rgba(255, 255, 255, 0.2); }
-
-        .content-stack h3 { font-family: 'Outfit'; font-size: 1.1rem; font-weight: 600; margin-bottom: 2px; }
-        .content-stack p { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+        .glass-box:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
         
-        .icon-sq { width: 52px; height: 52px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; }
+        .icon-sq { 
+            width: 44px; height: 44px; border-radius: 6px; 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2rem; flex-shrink: 0;
+        }
 
-        .stagger-enter { opacity: 0; animation: slideUpSpring 0.6s ease forwards; animation-delay: calc(var(--idx) * 0.06s); }
-        @keyframes slideUpSpring { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .header-label { font-family: 'Outfit'; font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); }
-        .hero-box { padding: 40px 0; text-align: center; }
-        .hero-logo { width: 72px; height: 72px; border-radius: 18px; border: 1px solid var(--glass-border); background: var(--glass-bg); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }
+        .content-stack h3 { font-family: 'Outfit'; font-size: 14px; font-weight: 600; }
+        .content-stack p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-        .info-card { padding: 24px; border-radius: 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); line-height: 1.6; }
-        .info-card h4 { color: var(--color-physics); margin: 20px 0 10px; font-family: 'Outfit'; }
+        .search-container { margin-bottom: 15px; position: sticky; top: 0; z-index: 5; background: #020617; padding-top: 5px; }
+        .search-bar { 
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); 
+            border-radius: var(--radius); padding: 12px 12px 12px 38px; color: white; outline: none;
+        }
+        .search-icon { position: absolute; left: 14px; top: calc(50% + 2.5px); transform: translateY(-50%); color: var(--text-secondary); }
+
+        .subheading { 
+            font-family: 'Outfit'; font-size: 11px; font-weight: 700; text-transform: uppercase; 
+            letter-spacing: 1.5px; color: #60a5fa; margin: 24px 0 10px 4px; 
+            display: flex; align-items: center; gap: 10px;
+        }
+        .subheading::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--glass-border), transparent); }
+
+        .header-label { font-family: 'Outfit'; font-size: 19px; font-weight: 700; margin-bottom: 20px; }
+
+        .home-hero { padding: 60px 0 40px; text-align: center; }
+        .home-hero h1 { font-family: 'Outfit'; font-size: 32px; }
+        .home-hero p { font-size: 12px; color: var(--text-secondary); letter-spacing: 1px; }
+
+        .info-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .info-card h4 { font-family: 'Outfit'; font-size: 11px; color: #60a5fa; margin-bottom: 6px; text-transform: uppercase; }
+        .info-card p { line-height: 1.6; color: var(--text-secondary); font-size: 11.5px; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <nav class="navbar" id="navbar">
-            <div class="nav-btn" onclick="app.back()"><i class="fas fa-arrow-left"></i></div>
+            <div class="nav-btn" onclick="app.back()"><i class="fas fa-chevron-left"></i></div>
             <div class="nav-title" id="nav-title">STUDYDEX</div>
-            <div style="width: 40px"></div>
+            <div style="width: 36px"></div>
         </nav>
 
-        <div class="screen-container">
-            <!-- HOME -->
+        <div class="screen-container" id="main-viewport">
+            <!-- Home -->
             <section id="home" class="screen active">
-                <div class="hero-box stagger-enter" style="--idx: 0;">
-                    <div class="hero-logo"><i class="fas fa-layer-group"></i></div>
-                    <h1 style="font-family: 'Outfit'; font-size: 2.5rem; font-weight: 700; letter-spacing: -1px;">StudyDex</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px;">Premium Class 12 Learning</p>
+                <div class="home-hero">
+                    <h1>StudyDex</h1>
+                    <p>SYSTEM ACCESS ACTIVE</p>
                 </div>
-                
-                <div class="glass-box stagger-enter" style="--idx: 1;" onclick="app.startPath('explore')">
-                    <div class="icon-sq" style="color: var(--color-physics);"><i class="fas fa-book-open"></i></div>
-                    <div class="content-stack" style="flex: 1;">
-                        <h3>Start Learning</h3>
-                        <p>Browse the master curriculum</p>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+                <div class="glass-box" onclick="app.startPath('explore')">
+                    <div class="icon-sq" style="color: var(--color-physics);"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="content-stack"><h3>Syllabus</h3><p>Academic curriculum modules</p></div>
                 </div>
-
-                <div class="glass-box stagger-enter" style="--idx: 2;" onclick="app.startPath('sample')">
-                    <div class="icon-sq" style="color: var(--color-cs);"><i class="fas fa-file-alt"></i></div>
-                    <div class="content-stack" style="flex: 1;">
-                        <h3>Sample Papers</h3>
-                        <p>Past 5 Years PYQ</p>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+                <div class="glass-box" onclick="app.startPath('sample')">
+                    <div class="icon-sq" style="color: var(--color-cs);"><i class="fas fa-file-invoice"></i></div>
+                    <div class="content-stack"><h3>Sample Papers</h3><p>Board examination archive</p></div>
                 </div>
-
-                <div class="glass-box stagger-enter" style="--idx: 3; background: rgba(255,255,255,0.03); border-style: dashed;" onclick="app.navigate('about')">
-                    <div class="icon-sq" style="color: var(--color-math);"><i class="fas fa-circle-info"></i></div>
-                    <div class="content-stack" style="flex: 1;">
-                        <h3>Learn More</h3>
-                        <p>Methodology & Methodology</p>
-                    </div>
-                    <i class="fas fa-arrow-right" style="color: var(--text-secondary);"></i>
+                <div class="glass-box" style="border-style: dashed;" onclick="app.navigate('about')">
+                    <div class="icon-sq" style="color: var(--color-math);"><i class="fas fa-info-circle"></i></div>
+                    <div class="content-stack"><h3>Platform Info</h3><p>Documentation and guide</p></div>
                 </div>
             </section>
 
-            <!-- ABOUT PAGE -->
+            <!-- About -->
             <section id="about" class="screen">
-                <h2 class="header-label stagger-enter">About StudyDex</h2>
-                <div class="info-card stagger-enter" style="--idx: 1;">
-                    <p>StudyDex is a high-performance learning companion designed specifically for Class 12 students aiming for excellence.</p>
-                    
-                    <h4><i class="fas fa-bullseye"></i> Goal Oriented</h4>
-                    <p>Every MCQ, short answer, and case study is indexed from a deep database of past curriculum resources.</p>
-
-                    <h4><i class="fas fa-microchip"></i> Smart Navigation</h4>
-                    <p>Move seamlessly from Chapters to specific Question Types, then filter by Year and Set to master individual topics.</p>
-
-                    <h4><i class="fas fa-wand-magic-sparkles"></i> Luminous Glass UI</h4>
-                    <p>Interface built for dark-mode readability and tactile feedback to reduce strain during study sessions.</p>
+                <h2 class="header-label">Platform Info</h2>
+                <div class="info-card">
+                    <h4>The Mission</h4>
+                    <p>StudyDex is engineered to bridge the gap between complex textbook theory and high-stakes examination requirements.</p>
+                </div>
+                <div class="info-card">
+                    <h4>User Guide</h4>
+                    <p>Navigate through subjects to find specific chapter formats or previous year sessions.</p>
                 </div>
             </section>
 
-            <!-- SUBJECTS -->
+            <!-- Subjects -->
             <section id="subjects" class="screen">
-                <h2 class="header-label stagger-enter" id="page-heading">SELECT SUBJECT</h2>
+                <h2 class="header-label" id="page-heading">Subjects</h2>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-bar" placeholder="Filter subjects..." oninput="app.search(this.value, 'subject-list')">
+                </div>
                 <div id="subject-list"></div>
             </section>
 
-            <!-- CHAPTERS -->
+            <!-- English Hub -->
+            <section id="eng-hub" class="screen">
+                <h2 class="header-label">English Hub</h2>
+                <div class="glass-box" onclick="app.showEnglishLit()"><div class="icon-sq"><i class="fas fa-book"></i></div><div class="content-stack"><h3>Literature Section</h3><p>Flamingo & Vistas</p></div></div>
+            </section>
+
+            <!-- Chapters -->
             <section id="chapters" class="screen">
-                <h2 class="header-label stagger-enter" id="chapter-header">Modules</h2>
+                <h2 class="header-label">Chapters</h2>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-bar" placeholder="Filter chapters..." oninput="app.search(this.value, 'chapter-list')">
+                </div>
                 <div id="chapter-list"></div>
             </section>
 
-            <!-- QUESTIONS -->
-            <section id="questions" class="screen">
-                <h2 class="header-label stagger-enter" id="question-header">Format</h2>
-                <div id="question-list"></div>
-            </section>
-
-            <!-- YEARS -->
-            <section id="years" class="screen">
-                <h2 class="header-label stagger-enter">Select Year</h2>
-                <div id="year-list"></div>
-            </section>
-
-            <!-- SETS -->
-            <section id="sets" class="screen">
-                <h2 class="header-label stagger-enter">Select Set</h2>
-                <div id="set-list"></div>
-            </section>
+            <!-- Format -->
+            <section id="questions" class="screen"><h2 class="header-label">Format</h2><div id="question-list"></div></section>
+            <!-- Year -->
+            <section id="years" class="screen"><h2 class="header-label">Year Archive</h2><div id="year-area"></div></section>
+            <!-- Set -->
+            <section id="sets" class="screen"><h2 class="header-label">Available Sets</h2><div id="set-list"></div></section>
         </div>
     </div>
 
     <script>
         const DATA = {
-            physics: { 
-                name: "Physics", icon: "atom", color: "var(--color-physics)",
-                chapters: ["Electric Charges And Fields", "Electrostatic Potential And Capacitance", "Current Electricity", "Moving Charges And Magnetism", "Magnetism And Matter", "Electromagnetic Induction", "Alternating Currents", "EM Waves", "Ray Optics", "Wave Optics", "Dual Nature", "Atoms", "Nuclei", "Semiconductor Electronics"] 
-            },
-            chemistry: { 
-                name: "Chemistry", icon: "flask", color: "var(--color-chem)",
-                chapters: ["The Solid State", "Solutions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry", "d & f Block Elements", "Coordination Compounds", "Haloalkanes & Haloarenes", "Alcohols Phenols Ethers", "Aldehydes Ketones Acids", "Amines", "Biomolecules", "Polymers", "Everyday Life"] 
-            },
-            maths: { 
-                name: "Mathematics", icon: "infinity", color: "var(--color-math)",
-                chapters: ["Relations & Functions", "Inverse Trigonometry", "Matrices", "Determinants", "Continuity & Differentiability", "Applications of Derivatives", "Integrals", "Applications of Integrals", "Differential Equations", "Vector Algebra", "3D Geometry", "Linear Programming", "Probability"] 
-            },
-            biology: { 
-                name: "Biology", icon: "dna", color: "var(--color-bio)",
-                chapters: ["Reproduction in Organisms", "Sexual Reproduction in Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance", "Molecular Basis of Inheritance", "Evolution", "Human Health & Disease", "Strategies for Food Production", "Microbes in Human Welfare", "Biotechnology Principles", "Biotech Applications", "Organisms & Populations", "Ecosystem", "Biodiversity", "Environmental Issues"] 
-            },
-            informatics: { 
-                name: "Computer Sci.", icon: "code", color: "var(--color-cs)",
-                chapters: ["Introduction to Python", "Python Libraries - Pandas", "Data Handling using Pandas", "Data Visualization", "Introduction to SQL", "Database Queries using SQL", "Understanding Data", "Data Management", "Information Security"] 
+            physics: { name: "Physics", icon: "atom", color: "var(--color-physics)", chapters: ["Electric Charges and Fields", "Electrostatic Potential", "Current Electricity", "Moving Charges", "Magnetism", "EMI", "Alternating Current", "EM Waves", "Ray Optics", "Wave Optics", "Dual Nature", "Atoms", "Nuclei", "Semiconductors"] },
+            chemistry: { name: "Chemistry", icon: "flask", color: "var(--color-chem)", chapters: ["Solutions", "Electrochemistry", "Chemical Kinetics", "d-and f-Block", "Coordination", "Haloalkanes", "Alcohols", "Aldehydes", "Amines", "Biomolecules"] },
+            maths: { name: "Mathematics", icon: "infinity", color: "var(--color-math)", chapters: ["Relations & Functions", "Inverse Trig", "Matrices", "Determinants", "Calculus", "Integration", "Vectors", "3D Geometry", "Probability"] },
+            biology: { name: "Biology", icon: "dna", color: "var(--color-bio)", chapters: ["Reproduction", "Genetics", "Evolution", "Human Health", "Biotech", "Ecology"] },
+            informatics: { name: "Computer Science", icon: "code", color: "var(--color-cs)", chapters: ["Python Review", "File Handling", "Computer Networks", "Database Concepts", "SQL", "Cyber Safety"] },
+            english: {
+                flamingo: { prose: ["The Last Lesson", "Lost Spring", "Deep Water", "The Rattrap", "Indigo", "Poets and Pancakes", "The Interview", "Going Places"], poetry: ["My Mother at Sixty-Six", "Keeping Quiet", "A Thing of Beauty", "A Roadside Stand", "Aunt Jennifer's Tigers"] },
+                vistas: ["The Third Level", "The Tiger King", "The Enemy", "On the Face of It", "Memories of Childhood"]
             }
         };
 
-        const QUESTIONS = [
-            { id: 'mcq', name: "Multiple Choice", icon: "list-ul", desc: "1 Mark Concept Check" },
-            { id: 'vsa', name: "Very Short Answer", icon: "pen-clip", desc: "1 Mark Definitions" },
-            { id: 'sa', name: "Short Answer", icon: "align-left", desc: "2-3 Mark Theory" },
-            { id: 'la', name: "Long Answer", icon: "file-lines", desc: "5 Mark Derivations" },
-            { id: 'case', name: "Case Study", icon: "magnifying-glass", desc: "Context Analysis" }
-        ];
-
         const app = {
             history: ['home'],
-            state: { sub: null, ch: null, qType: null, source: 'explore' },
-
-            init() { this.renderSubjects(); },
+            state: { sub: null, source: 'explore' },
 
             startPath(type) {
                 this.state.source = type;
-                document.getElementById('page-heading').textContent = type === 'sample' ? "Sample Papers" : "Syllabus";
+                document.getElementById('page-heading').textContent = type === 'sample' ? "Sample Papers" : "Subjects";
+                this.renderSubjects();
                 this.navigate('subjects');
             },
 
             renderSubjects() {
                 const list = document.getElementById('subject-list');
-                list.innerHTML = Object.entries(DATA).map(([id, s], i) => `
-                    <div class="glass-box stagger-enter" style="--idx: ${i+1}; border-color: ${s.color}44;" onclick="app.selectSubject('${id}')">
-                        <div class="icon-sq" style="color: ${s.color};"><i class="fas fa-${s.icon}"></i></div>
-                        <div class="content-stack" style="flex: 1;"><h3>${s.name}</h3><p>${s.chapters.length} Chapters</p></div>
-                        <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+                const subs = Object.entries(DATA).filter(([k])=>k!=='english');
+                list.innerHTML = subs.map(([id, s]) => `
+                    <div class="glass-box" onclick="app.selectSubject('${id}')">
+                        <div class="icon-sq" style="color:${s.color};"><i class="fas fa-${s.icon}"></i></div>
+                        <div class="content-stack"><h3>${s.name}</h3>${this.state.source === 'explore' ? `<p>${s.chapters.length} Units Available</p>` : ''}</div>
                     </div>
-                `).join('');
+                `).join('') + `
+                    <div class="glass-box" onclick="app.selectSubject('english')">
+                        <div class="icon-sq" style="color:var(--color-eng);"><i class="fas fa-pen-nib"></i></div>
+                        <div class="content-stack"><h3>English Core</h3></div>
+                    </div>
+                `;
             },
 
             selectSubject(id) {
                 this.state.sub = id;
-                const s = DATA[id];
-                document.getElementById('nav-title').textContent = s.name.toUpperCase();
-                
-                if (this.state.source === 'sample') {
-                    this.renderYears();
-                    this.navigate('years');
-                } else {
-                    document.getElementById('chapter-header').textContent = s.name;
-                    const list = document.getElementById('chapter-list');
-                    list.innerHTML = s.chapters.map((ch, i) => `
-                        <div class="glass-box stagger-enter" style="--idx: ${i+1};" onclick="app.selectChapter('${ch}')">
-                            <div style="width: 24px; font-weight: 700; color: ${s.color};">${String(i+1).padStart(2, '0')}</div>
-                            <h4 style="flex:1">${ch}</h4><i class="fas fa-chevron-right"></i>
-                        </div>
-                    `).join('');
-                    this.navigate('chapters');
-                }
+                document.getElementById('nav-title').textContent = id.toUpperCase();
+                if (id === 'english') this.navigate('eng-hub');
+                else if (this.state.source === 'sample') this.renderYears();
+                else this.renderChapters();
             },
 
+            showEnglishLit() {
+                const list = document.getElementById('chapter-list');
+                let html = `<div class="subheading">Flamingo: Prose</div>`;
+                DATA.english.flamingo.prose.forEach(ch => html += this.chItem(ch));
+                html += `<div class="subheading">Flamingo: Poetry</div>`;
+                DATA.english.flamingo.poetry.forEach(ch => html += this.chItem(ch));
+                html += `<div class="subheading">Vistas</div>`;
+                DATA.english.vistas.forEach(ch => html += this.chItem(ch));
+                list.innerHTML = html;
+                this.navigate('chapters');
+            },
+
+            renderChapters() {
+                const list = document.getElementById('chapter-list');
+                list.innerHTML = DATA[this.state.sub].chapters.map(ch => this.chItem(ch)).join('');
+                this.navigate('chapters');
+            },
+
+            chItem(name) { return `<div class="glass-box" onclick="app.selectChapter('${name}')"><h4 style="flex:1;">${name}</h4><i class="fas fa-chevron-right" style="opacity:0.3;"></i></div>`; },
+
             selectChapter(ch) {
-                this.state.ch = ch;
-                const s = DATA[this.state.sub];
-                document.getElementById('question-header').textContent = ch.length > 20 ? ch.substring(0,20)+"..." : ch;
                 const list = document.getElementById('question-list');
-                list.innerHTML = QUESTIONS.map((q, i) => `
-                    <div class="glass-box stagger-enter" style="--idx: ${i+1}" onclick="app.selectQuestionType('${q.name}')">
-                        <div class="icon-sq" style="color: ${s.color};"><i class="fas fa-${q.icon}"></i></div>
-                        <div class="content-stack" style="flex: 1;"><h3>${q.name}</h3><p>${q.desc}</p></div>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                `).join('');
+                const formats = ["MCQs", "Assertion & Reason", "Case Based", "Short Answer", "Long Answer"];
+                list.innerHTML = formats.map(f => `<div class="glass-box" onclick="app.renderYears()"><h3>${f}</h3></div>`).join('');
                 this.navigate('questions');
             },
 
-            selectQuestionType(qt) {
-                this.state.qType = qt;
-                this.renderYears();
+            renderYears() {
+                const area = document.getElementById('year-area');
+                let html = (this.state.source === 'explore') ? `<div class="glass-box" style="border-color:#fbbf24"><h3>Recommended Mixed</h3></div>` : "";
+                html += [2024, 2023, 2022, 2021].map(y => `<div class="glass-box" onclick="app.renderSets('${y}')"><h3>Session ${y}</h3></div>`).join('');
+                area.innerHTML = html;
                 this.navigate('years');
             },
 
-            renderYears() {
-                const list = document.getElementById('year-list');
-                const years = [2024, 2023, 2022, 2021, 2020];
-                const s = DATA[this.state.sub];
-                list.innerHTML = years.map((yr, i) => `
-                    <div class="glass-box stagger-enter" style="--idx: ${i+1}" onclick="app.selectYear('${yr}')">
-                        <div class="icon-sq" style="color: ${s.color};"><i class="fas fa-calendar-alt"></i></div>
-                        <div class="content-stack" style="flex: 1;">
-                            <h3 style="font-size: 1.2rem;">Session ${yr}</h3>
-                            <p>Resource Collection</p>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
-                    </div>
-                `).join('');
-            },
-
-            selectYear(yr) {
-                this.state.year = yr;
+            renderSets(label) {
                 const list = document.getElementById('set-list');
-                const s = DATA[this.state.sub];
-                list.innerHTML = [1, 2, 3, 4].map((num, i) => `
-                    <div class="glass-box stagger-enter" style="--idx: ${i+1}" onclick="alert('Opening: ${s.name} - ${yr} Set ${num}')">
-                        <div class="icon-sq" style="color: ${s.color}; border-radius: 50%;"><i class="fas fa-file-signature"></i></div>
-                        <div class="content-stack" style="flex: 1;"><h3>Set ${num}</h3><p>Full Question Set</p></div>
-                        <i class="fas fa-play" style="color: ${s.color}"></i>
-                    </div>
-                `).join('');
+                list.innerHTML = [1, 2, 3, 4].map(n => `<div class="glass-box" onclick="alert('Set ${n} loading...')"><h3>Exam Set ${n}</h3><p>${label}</p></div>`).join('');
                 this.navigate('sets');
             },
 
-            navigate(id) {
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById(id).classList.add('active');
-                document.getElementById('navbar').classList.toggle('visible', id !== 'home');
-                if (this.history[this.history.length-1] !== id) this.history.push(id);
-                if (id === 'about') document.getElementById('nav-title').textContent = "INFO";
+            search(val, targetId) {
+                const items = document.getElementById(targetId).getElementsByClassName('glass-box');
+                Array.from(items).forEach(item => {
+                    item.style.display = item.textContent.toLowerCase().includes(val.toLowerCase()) ? 'flex' : 'none';
+                });
             },
 
-            back() {
-                if (this.history.length > 1) {
-                    this.history.pop();
-                    const targetId = this.history[this.history.length-1];
-                    this.navigate(targetId);
+            navigate(id) {
+                // 1. Reset all screens
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                
+                // 2. Activate target screen
+                const target = document.getElementById(id);
+                if (target) {
+                    target.scrollTop = 0; // RESET SCROLL POSITION ON EVERY NAVIGATION
+                    target.classList.add('active');
                     
-                    if(targetId === 'home') document.getElementById('nav-title').textContent = "STUDYDEX";
-                    if(targetId === 'subjects') document.getElementById('nav-title').textContent = this.state.source === 'sample' ? "SAMPLES" : "SYLLABUS";
-                    if(targetId === 'chapters') document.getElementById('nav-title').textContent = DATA[this.state.sub].name.toUpperCase();
+                    // 3. Navbar logic
+                    const isHome = (id === 'home');
+                    const navbar = document.getElementById('navbar');
+                    const viewport = document.getElementById('main-viewport');
+                    
+                    navbar.classList.toggle('visible', !isHome);
+                    viewport.style.marginTop = isHome ? '0' : '56px';
+
+                    if (this.history[this.history.length-1] !== id) this.history.push(id);
                 }
-            }
+            },
+
+            back() { if (this.history.length > 1) { this.history.pop(); this.navigate(this.history[this.history.length-1]); } }
         };
-        app.init();
+
+        app.renderSubjects();
     </script>
 </body>
 </html>
 
-                
